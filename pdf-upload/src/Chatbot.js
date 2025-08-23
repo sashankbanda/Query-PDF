@@ -21,7 +21,8 @@ function Chatbot() {
   useEffect(() => {
     const fetchPdfNames = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/get-pdf-names');
+        // const response = await axios.get('http://localhost:5000/get-pdf-names');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/get-pdf-names`);
         setPdfNames(response.data.pdfNames);
       } catch (error) {
         console.error('Error fetching PDF names', error);
@@ -32,7 +33,8 @@ function Chatbot() {
 
   const fetchPdf = async (pdfName) => {
     try {
-      const response = await axios.get(`http://localhost:5000/get-pdf/${pdfName}`, { responseType: 'blob' });
+      // const response = await axios.get(`http://localhost:5000/get-pdf/${pdfName}`, { responseType: 'blob' });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/get-pdf/${pdfName}`, { responseType: 'blob' });
       setPdfFile(URL.createObjectURL(response.data));
     } catch (error) {
       console.error('Error fetching PDF', error);
@@ -86,7 +88,8 @@ function Chatbot() {
     setChatHistory([...chatHistory, userMessage]);
 
     try {
-      const response = await axios.post('http://localhost:5000/ask', { question });
+      // const response = await axios.post('http://localhost:5000/ask', { question });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/ask`, { question });
       const botMessage = {
         sender: 'bot',
         text: response.data.answer,

@@ -25,7 +25,11 @@ function FileUpload({ setUploadComplete }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
+      // // Find this line:
+      // const response = await axios.post('http://localhost:5000/upload', formData, { ... });
+      // // Change it to this:
+      // const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, { ... });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -25,7 +25,15 @@ if not groq_api_key or not google_api_key:
 
 # --- Flask App Initialization ---
 app = Flask(__name__)
-CORS(app)
+
+# --- CORS Configuration ---
+# **FIX:** Explicitly list the frontend origins that are allowed to make requests.
+# This tells the browser that it's safe to accept requests from your Netlify app.
+CORS(app, origins=[
+    "https://iqpdf.netlify.app",
+    "http://localhost:3000" # Also allow your local development environment
+])
+
 
 # --- Configuration ---
 # Use a dedicated folder for persistent data. In production (e.g., on Render),
@@ -236,4 +244,3 @@ if __name__ == '__main__':
 else:
     # This block is executed when running with a production server like Gunicorn.
     initialize_app_state()
-

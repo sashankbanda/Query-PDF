@@ -241,6 +241,13 @@ def get_pdf(pdf_name):
 def get_pdf_names():
     return jsonify({"pdfNames": pdf_filenames})
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://iqpdf.netlify.app')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
+
 # --- Main Execution ---
 if __name__ == '__main__':
     # This block is for local development only.

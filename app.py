@@ -29,10 +29,15 @@ app = Flask(__name__)
 # --- CORS Configuration ---
 # **FIX:** Explicitly list the frontend origins that are allowed to make requests.
 # This tells the browser that it's safe to accept requests from your Netlify app.
-CORS(app, origins=[
+# CORS(app, origins=[
+#     "https://iqpdf.netlify.app",
+#     "http://localhost:3000" # Also allow your local development environment
+# ])
+
+CORS(app, resources={r"/*": {"origins": [
     "https://iqpdf.netlify.app",
-    "http://localhost:3000" # Also allow your local development environment
-])
+    "http://localhost:3000"
+]}})
 
 
 # --- Configuration ---

@@ -3,12 +3,13 @@ import axios from 'axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import './chat.css';
+// import './chat.css';
+import Navbar from './Navbar';
 
 // Set up the PDF.js worker to render PDFs
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
-function Chatbot() {
+function Chatbot({ theme, toggleTheme }) {
   const [question, setQuestion] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [pdfFile, setPdfFile] = useState('');
@@ -131,10 +132,7 @@ function Chatbot() {
 
   return (
     <div className="Chatbot">
-      <div className="navbar">
-        <div className="logo">PDFChat</div>
-        <div className="profile-symbol">Profile</div>
-      </div>
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
       <div className="main-content">
         <div className="pdf-viewer">
           <div className="pdf-viewer-header">

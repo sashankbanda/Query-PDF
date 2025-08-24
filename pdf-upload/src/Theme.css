@@ -1,0 +1,335 @@
+/* pdf-upload/src/Theme.css */
+
+/* 1. DEFINE COLOR PALETTES (No changes here) */
+:root {
+  /* Light Theme Palette */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #F8F9FA;
+  --navbar-bg: #FFFFFF;
+  --border-color: #DEE2E6;
+  --text-primary: #212529;
+  --text-secondary: #FFFFFF;
+  --navbar-text: #212529;
+  --input-bg: #FFFFFF;
+  --input-text: #212529;
+  --button-bg: #DC3545;
+  --button-bg-hover: #c82333;
+  --button-disabled-bg: #cccccc;
+  --msg-user-bg: #D4EDDA;
+  --msg-bot-bg: #F8D7DA;
+  --link-color: #3E87D0;
+  --progress-popup-bg: rgba(0, 0, 0, 0.5);
+  --progress-content-bg: #FFFFFF;
+  --progress-content-text: #212529;
+  --progress-bar-track: #e9ecef;
+}
+
+html.dark-mode {
+  /* Dark Theme Palette */
+  --bg-primary: #2D2D2D;
+  --bg-secondary: #1E1E1E;
+  --bg-tertiary: #1E1E1E;
+  --navbar-bg: #2D2D2D;
+  --border-color: #444444;
+  --text-primary: #E0E0E0;
+  --text-secondary: #FFFFFF;
+  --navbar-text: #E0E0E0;
+  --input-bg: #333333;
+  --input-text: #E0E0E0;
+  --button-bg: #D32F2F;
+  --button-bg-hover: #b71c1c;
+  --button-disabled-bg: #555555;
+  --msg-user-bg: #2A4B3A;
+  --msg-bot-bg: #4B2A2A;
+  --link-color: #3E87D0;
+  --progress-popup-bg: rgba(0, 0, 0, 0.7);
+  --progress-content-bg: #2c2c2c;
+  --progress-content-text: #E0E0E0;
+  --progress-bar-track: #555;
+}
+
+/* 2. GENERAL STYLES */
+body {
+  margin: 0;
+  background-color: var(--bg-tertiary); /* Use tertiary for a consistent base */
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.App {
+  text-align: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* 3. NAVBAR STYLES (Restored from original files) */
+.navbar {
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar .logo, .navbar .profile-symbol {
+  font-size: 1.2rem;
+}
+
+.theme-toggle-button {
+    background: none;
+    border: none;
+    color: var(--navbar-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 10px;
+}
+
+/* 4. CHATBOT PAGE STYLES (Restored from chat.css) */
+.Chatbot {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.main-content {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 61px); /* Adjusted based on navbar padding */
+}
+
+.pdf-viewer {
+  flex: 1;
+  background-color: var(--bg-primary);
+  padding: 10px;
+  padding-top: 0px;
+  overflow-y: auto;
+}
+
+.pdf-viewer-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
+  padding: 10px;
+  padding-top: 0px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pdf-viewer-header input {
+  width: 40px;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+}
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-secondary);
+  padding: 10px;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-color);
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 10px;
+}
+
+.chat-message {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.user-message {
+  background-color: var(--msg-user-bg);
+  color: var(--text-primary);
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.bot-message {
+  background-color: var(--msg-bot-bg);
+  color: var(--text-primary);
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+.bot-message a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.input-container {
+  display: flex;
+  padding: 10px;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+}
+
+.input-container input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  margin-right: 10px;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  font-size: 1rem;
+}
+
+.input-container button {
+  background-color: var(--button-bg);
+  color: var(--text-secondary);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.input-container button:hover {
+  background-color: var(--button-bg-hover);
+}
+
+/* 5. UPLOAD PAGE STYLES (Restored from upload.css) */
+.FileUpload-page {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.FileUpload-content {
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 400px;
+  margin: auto; /* Center the content area */
+  text-align: center;
+}
+
+.FileUpload-content h1 {
+  margin-top: 0;
+}
+
+.FileUpload-content input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.FileUpload-content button {
+  background-color: var(--button-bg);
+  color: var(--text-secondary);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.FileUpload-content button:hover {
+  background-color: var(--button-bg-hover);
+}
+
+.file-previews {
+  margin: 10px 0;
+  text-align: left;
+}
+
+.file-preview {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 5px;
+  margin: 5px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* 6. PDF NAVIGATION BUTTONS (Specific styles from upload.css) */
+.pdf-navigation button {
+  margin: 10px 3px;
+  padding: 10px 10px;
+  font-size: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--button-bg);
+  color: var(--text-secondary);
+}
+
+.pdf-navigation button:hover {
+  background-color: var(--button-bg-hover);
+}
+
+button:disabled {
+  background-color: var(--button-disabled-bg);
+  cursor: not-allowed;
+}
+
+/* 7. PROGRESS POPUP (Restored from upload.css) */
+.progress-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--progress-popup-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.progress-content {
+  background-color: var(--progress-content-bg);
+  color: var(--progress-content-text);
+  padding: 30px 40px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.progress-content h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.progress {
+  background-color: var(--progress-bar-track);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  height: 25px;
+  margin: 15px 0;
+  border: 1px solid var(--border-color);
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--link-color);
+  width: 0%;
+  transition: width 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: bold;
+}

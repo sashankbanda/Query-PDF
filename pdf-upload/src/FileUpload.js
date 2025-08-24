@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './upload.css';
+// import './upload.css';
+import Navbar from './Navbar';
 
-function FileUpload({ setUploadComplete }) {
+function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
   const [files, setFiles] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,10 +61,7 @@ function FileUpload({ setUploadComplete }) {
 
   return (
     <div className="FileUpload-background">
-      <div className="navbar">
-        <div className="logo">PDFChat</div>
-        <div className="profile-symbol">Profile</div>
-      </div>
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
       <div className="FileUpload">
         <h1>Upload PDF Documents</h1>
         <input type="file" onChange={onFileChange} accept="application/pdf" multiple disabled={loading} />

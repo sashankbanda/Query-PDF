@@ -1,98 +1,139 @@
 /* Styling for FileUpload component */
 .FileUpload {
-    background-color: black;
-    color: white;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 400px;
-    margin: 0 auto;
-  }
+  background-color: black;
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 400px;
+  margin: 0 auto;
+}
 
-  .FileUpload-background {
-    background-color: black;
-    height: 100vh;
-    width: 100vw;
-  }
-  
-  .FileUpload h1 {
-    margin-top: 0;
-  }
-  
-  .FileUpload input[type="file"] {
-    margin-bottom: 10px;
-  }
-  
-  .FileUpload button {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .FileUpload button:hover {
-    background-color: darkred;
-  }
-  
-  /* Styling for Navbar */
-  .navbar {
-    background-color: black;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-  }
-  
-  .navbar .logo {
-    font-size: 1.2rem;
-  }
-  
-  .navbar .profile-symbol {
-    font-size: 1.2rem;
-  }
-  
-  .file-previews {
-    margin: 10px 0;
-  }
-  
-  .file-preview {
-    background-color: #f9f9f9;
-    color: black;
-    padding: 5px;
-    margin: 5px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  button {
-    margin: 10px 3px;
-    padding: 10px 10px;
-    font-size: 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background-color: red;
-    color: #fff;
-  }
-  
-  button:disabled {
-    background-color: #aaa;
-    cursor: not-allowed;
-  }
-  
-  .loading-spinner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 24px;
-  }
-  
+.FileUpload-background {
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
+}
+
+.FileUpload h1 {
+  margin-top: 0;
+}
+
+.FileUpload input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.FileUpload button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.FileUpload button:hover {
+  background-color: darkred;
+}
+
+/* Styling for Navbar */
+.navbar {
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.navbar .logo {
+  font-size: 1.2rem;
+}
+
+.navbar .profile-symbol {
+  font-size: 1.2rem;
+}
+
+.file-previews {
+  margin: 10px 0;
+}
+
+.file-preview {
+  background-color: #f9f9f9;
+  color: black;
+  padding: 5px;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  margin: 10px 3px;
+  padding: 10px 10px;
+  font-size: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: red;
+  color: #fff;
+}
+
+button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* --- New Styles for Progress Bar Popup --- */
+.progress-popup {
+  position: fixed; /* Sits on top of everything */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensures it's on top */
+}
+
+.progress-content {
+  background-color: #2c2c2c; /* Dark background for the popup box */
+  color: white;
+  padding: 30px 40px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.progress-content h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+/* The container for the bar */
+.progress {
+  background-color: #555; /* Dark grey track */
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  height: 25px; /* A slightly thicker bar */
+  margin: 15px 0;
+  border: 1px solid #666;
+}
+
+/* The moving blue bar */
+.progress-bar {
+  height: 100%;
+  background-color: #007bff; /* Blue color as requested */
+  width: 0%; /* Starts at 0 */
+  border-radius: 10px;
+  transition: width 0.2s ease-in-out; /* Smooth transition */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}

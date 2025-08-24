@@ -7,10 +7,12 @@ function FileUpload({ setUploadComplete }) {
   const [files, setFiles] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
 
   const onFileChange = (event) => {
     setFiles(Array.from(event.target.files));
+    setMessage(''); // Clear any previous messages
   };
 
   const onFileUpload = async () => {
@@ -23,20 +25,31 @@ function FileUpload({ setUploadComplete }) {
     files.forEach((file) => formData.append('files', file));
 
     setLoading(true);
+    setUploadProgress(0); // Reset progress
+    setMessage('Uploading...');
 
     try {
-      // // Find this line:
-      // const response = await axios.post('http://localhost:5000/upload', formData, { ... });
-      // // Change it to this:
-      // const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, { ... });
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        // This function accurately tracks the upload progress
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+          if (percentCompleted === 100) {
+            setMessage('Processing documents on the server...');
+          } else {
+            setMessage('Uploading...');
+          }
+        },
       });
+      
       setMessage(response.data.message);
       setUploadComplete(true);
-      navigate('/chat');
+      // A small delay to show the "complete" message before navigating
+      setTimeout(() => navigate('/chat'), 500);
+
     } catch (error) {
       setMessage(error.response ? error.response.data.error : 'An error occurred');
       setUploadComplete(false);
@@ -53,7 +66,7 @@ function FileUpload({ setUploadComplete }) {
       </div>
       <div className="FileUpload">
         <h1>Upload PDF Documents</h1>
-        <input type="file" onChange={onFileChange} accept="application/pdf" multiple />
+        <input type="file" onChange={onFileChange} accept="application/pdf" multiple disabled={loading} />
         <div className="file-previews">
           {files.map((file, index) => (
             <div key={index} className="file-preview">
@@ -61,12 +74,28 @@ function FileUpload({ setUploadComplete }) {
             </div>
           ))}
         </div>
-        <button onClick={onFileUpload} disabled={loading}>
-          {loading ? 'Uploading...' : 'Upload'}
+        <button onClick={onFileUpload} disabled={loading || files.length === 0}>
+          Upload & Start Chat
         </button>
-        <p>{message}</p>
+        {message && !loading && <p>{message}</p>}
       </div>
-      {loading && <div className="loading-spinner">Loading...</div>}
+
+      {/* --- This is the new Progress Bar Popup --- */}
+      {loading && (
+        <div className="progress-popup">
+          <div className="progress-content">
+            <h3>{message}</h3>
+            <div className="progress">
+              <div 
+                className="progress-bar" 
+                style={{ width: `${uploadProgress}%` }}
+              >
+                {uploadProgress}%
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

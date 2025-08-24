@@ -1,56 +1,63 @@
+# --- Import Necessary Libraries ---
 import os
+import time
+import shutil
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-import time
-import shutil
 
+# Import LangChain components
 from langchain_groq import ChatGroq
+from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import create_retrieval_chain
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-# Load environment variables from .env file
+# --- Initial Setup and Configuration ---
+
+# Load environment variables (API keys) from a .env file
 load_dotenv()
 
-# Retrieve API keys from environment variables
+# Initialize the Flask application
+app = Flask(__name__)
+# Enable Cross-Origin Resource Sharing (CORS)
+CORS(app)
+
+# --- Application Configuration ---
+# Use the simpler, direct configuration from your original code
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
+app.config['VECTORS'] = None
+app.config['PDF_FILENAMES'] = []
+
+# Create the 'uploads' directory if it doesn't already exist
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# --- API Key and LLM Initialization ---
+
+# Retrieve API keys from the environment
 groq_api_key = os.getenv("GROQ_API_KEY")
 google_api_key = os.getenv("GOOGLE_API_KEY")
 
-# It's good practice to ensure API keys are available when the app starts.
+# **CRITICAL FIX**: Set the Google API key as an environment variable
+# This ensures the embedding model initializes correctly, matching your original code.
+os.environ['GOOGLE_API_KEY'] = google_api_key
+
 if not groq_api_key or not google_api_key:
     raise ValueError("API keys for Groq and Google are not set. Please check your environment variables.")
 
-app = Flask(__name__)
-CORS(app)
-
-# --- Configuration ---
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
-# Use a dictionary to store session-specific data in memory
-# This is a simple approach; for larger apps, consider Redis or a database.
-app.config['STATE'] = {
-    "vectors": None,
-    "pdf_filenames": []
-}
-
-# Ensure the upload folder exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-# --- LLM and Prompt Initialization ---
+# Initialize the ChatGroq model
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="gemma2-9b-it")
 
+# Create a prompt template to instruct the LLM
 prompt = ChatPromptTemplate.from_template(
     """
     Answer the questions based on the provided context only.
     Please provide the most accurate response based on the question.
-    If the answer is not in the context, say "The provided text does not contain information about this."
     <context>
     {context}
     <context>
@@ -59,20 +66,24 @@ prompt = ChatPromptTemplate.from_template(
 )
 
 # --- Helper Functions ---
+
 def allowed_file(filename):
+    """Check if the uploaded file has an allowed extension (PDF)."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def vector_embedding(directory):
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=google_api_key)
+    """Load PDFs, split them, and create a FAISS vector store."""
+    # Initialize Google's embedding model. It will now correctly find the API key.
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     loader = PyPDFDirectoryLoader(directory)
     pages = loader.load_and_split()
-    # Handle case where no documents are loaded
     if not pages:
         return None
     vectors = FAISS.from_documents(pages, embeddings)
     return vectors
 
 def clear_upload_folder():
+    """Delete all files in the upload folder to prepare for a new session."""
     folder = app.config['UPLOAD_FOLDER']
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
@@ -83,20 +94,21 @@ def clear_upload_folder():
                 shutil.rmtree(file_path)
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
-    # Clear the state
-    app.config['STATE']['pdf_filenames'] = []
-    app.config['STATE']['vectors'] = None
+    # Reset the application config state
+    app.config['PDF_FILENAMES'] = []
+    app.config['VECTORS'] = None
 
 
-# --- API Routes ---
+# --- API Routes (Endpoints) ---
 
 @app.route('/')
 def health_check():
-    """Health check endpoint for Render."""
+    """A simple health check endpoint for the deployment service (Render)."""
     return jsonify({"status": "healthy", "message": "API is running."}), 200
 
 @app.route('/upload', methods=['POST'])
 def upload_files():
+    """Handle PDF file uploads, create vector store, and save state."""
     clear_upload_folder()
     if 'files' not in request.files:
         return jsonify({"error": "No files part in the request"}), 400
@@ -114,13 +126,14 @@ def upload_files():
             uploaded_filenames.append(filename)
         else:
             return jsonify({"error": f"File type not allowed for {file.filename}"}), 400
+    
+    app.config['PDF_FILENAMES'] = uploaded_filenames
 
     try:
-        vectors = vector_embedding(app.config['UPLOAD_FOLDER'])
-        if vectors is None:
+        # Generate and store the vector embeddings
+        app.config['VECTORS'] = vector_embedding(app.config['UPLOAD_FOLDER'])
+        if app.config['VECTORS'] is None:
              return jsonify({"error": "Could not create vector embeddings. The PDF might be empty or corrupted."}), 500
-        app.config['STATE']['vectors'] = vectors
-        app.config['STATE']['pdf_filenames'] = uploaded_filenames
         return jsonify({"message": "Files uploaded and vector store ready", "uploaded_files": uploaded_filenames}), 200
     except Exception as e:
         return jsonify({"error": f"An error occurred during embedding: {str(e)}"}), 500
@@ -128,12 +141,13 @@ def upload_files():
 
 @app.route('/ask', methods=['POST'])
 def ask_question():
+    """Receive a question, query the vector store, and return the LLM's answer."""
     data = request.get_json()
     question = data.get('question')
     if not question:
         return jsonify({"error": "No question provided"}), 400
 
-    vectors = app.config['STATE'].get('vectors')
+    vectors = app.config.get('VECTORS')
     if not vectors:
         return jsonify({"error": "Vector store not initialized. Please upload PDF files first."}), 400
 
@@ -146,24 +160,19 @@ def ask_question():
     response_time = time.process_time() - start
 
     answer = response['answer']
-    context_docs = response.get("context", [])
-
-    # Format the context to be sent to the frontend
-    formatted_context = []
-    if context_docs:
-        for doc in context_docs:
-            source = doc.metadata.get("source", "Unknown").replace(f"{UPLOAD_FOLDER}/", "")
-            page = doc.metadata.get("page", -1)
-            formatted_context.append({"source": source, "page": page + 1})
+    # Use the context formatting from your original code
+    context = response.get("context")
+    formatted_context = [{"source": doc.metadata["source"][8:], "page": int(doc.metadata["page"]) + 1} for doc in context] if context else None
 
     return jsonify({
         "answer": answer,
         "response_time": response_time,
-        "context": formatted_context if formatted_context else None
+        "context": formatted_context
     })
 
 @app.route('/get-pdf/<path:pdf_name>', methods=['GET'])
 def get_pdf(pdf_name):
+    """Serve a specific PDF file from the uploads folder."""
     try:
         return send_from_directory(app.config['UPLOAD_FOLDER'], pdf_name)
     except FileNotFoundError:
@@ -171,9 +180,9 @@ def get_pdf(pdf_name):
 
 @app.route('/get-pdf-names', methods=['GET'])
 def get_pdf_names():
-    return jsonify({"pdfNames": app.config['STATE']['pdf_filenames']}), 200
+    """Return the list of currently uploaded PDF filenames."""
+    return jsonify({"pdfNames": app.config['PDF_FILENAMES']}), 200
 
-
-# This part is for local development, Gunicorn will run the app in production
+# This block allows running the app locally for development
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

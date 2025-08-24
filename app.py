@@ -34,10 +34,11 @@ app = Flask(__name__)
 #     "http://localhost:3000" # Also allow your local development environment
 # ])
 
-CORS(app, resources={r"/*": {"origins": [
-    "https://iqpdf.netlify.app",
-    "http://localhost:3000"
-]}})
+CORS(app, resources={r"/*": {
+    "origins": ["https://iqpdf.netlify.app", "http://localhost:3000"],
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
 
 
 # --- Configuration ---

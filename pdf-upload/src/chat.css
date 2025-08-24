@@ -33,7 +33,7 @@
   
   .pdf-viewer {
     flex: 1;
-    background-color: #ffffff;
+    background-color: #181a1b;
     color: black;
     padding: 10px;
     padding-top: 0px;
@@ -60,11 +60,11 @@
   .pdf-viewer-header {
     position: sticky;
     top: 0;
-    background: white;
+    background: #181a1b;
     z-index: 10;
     padding: 10px;
     padding-top: 0px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #3e4446;
   }
   
   .chat-window {
@@ -84,14 +84,14 @@
 
   
   .user-message {
-    background-color: #d1e7dd;
+    background-color: #203d33;
     align-self: flex-end;
     margin-left: auto;
     text-align: left;
   }
   
   .bot-message {
-    background-color: #f8d7da;
+    background-color: #430c11;
     align-self: flex-start;
     margin-right: auto;
     text-align: left;

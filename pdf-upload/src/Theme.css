@@ -250,15 +250,40 @@ body {
   text-align: left;
 }
 
-.file-preview {
+/* .file-preview {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   padding: 5px;
   margin: 5px 0;
+  margin: 5px 0;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 0.9rem;
+} */
+
+.file-preview {
+    background-color: #f8f9fa;
+    background-color: var(--bg-secondary);
+    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    color: #212529;
+    color: var(--text-primary);
+    font-size: .9rem;
+    margin: auto; /* ✅ centers block horizontally */
+    padding: 5px 10px;
+    width: 250px;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
 
 /* 6. PDF NAVIGATION BUTTONS (Specific styles from upload.css) */
 .pdf-navigation button {

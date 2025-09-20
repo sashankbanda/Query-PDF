@@ -14,6 +14,8 @@ from langchain.chains import create_retrieval_chain
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+# Import the specific exception to catch
+from langchain_google_genai._common import GoogleGenerativeAIError
 
 load_dotenv()
 
@@ -87,9 +89,16 @@ def upload_files():
             app.config['PDF_FILENAMES'].append(filename)
         else:
             return jsonify({"error": "File type not allowed"}), 400
-
-    # Perform vector embedding after all files are uploaded
-    app.config['VECTORS'] = vector_embedding(app.config['UPLOAD_FOLDER'])
+    
+    try:
+        # Perform vector embedding after all files are uploaded
+        app.config['VECTORS'] = vector_embedding(app.config['UPLOAD_FOLDER'])
+    except GoogleGenerativeAIError as e:
+        # Catch the specific quota error
+        return jsonify({
+            "error": "Failed to create embeddings. Your API quota for the embedding model may have been exceeded. Please try again later.",
+            "details": str(e)
+        }), 500
 
     return jsonify({"message": "Files uploaded and vector store ready", "uploaded_files": uploaded_filenames}), 200
 

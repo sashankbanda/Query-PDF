@@ -7,7 +7,9 @@ import time
 import shutil
 
 from langchain_groq import ChatGroq
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+# FIX: The 'RecursiveCharacterTextSplitter' was moved to its own dedicated package 
+# in the LangChain ecosystem updates. We import it directly from 'langchain_text_splitters'.
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
@@ -48,6 +50,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def vector_embedding(directory):
+    # NOTE: The RecursiveCharacterTextSplitter is imported but not explicitly used here,
+    # as PyPDFDirectoryLoader.load_and_split() typically handles splitting internally.
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     loader = PyPDFDirectoryLoader(directory)
     pages = loader.load_and_split()
@@ -112,12 +116,36 @@ def ask_question():
     response_time = time.process_time() - start
 
     answer = response['answer']
-    context = response["context"] if "The provided text does not contain any information" not in answer else None
+    # Use .get() to safely access 'context'
+    context = response.get("context") 
+
+    # Clean up and format context sources for the client
+    formatted_context = None
+    if context:
+        formatted_context = []
+        seen_sources = set()
+        for doc in context:
+            source_path = doc.metadata.get("source")
+            page_number = doc.metadata.get("page")
+            
+            # Ensure we have valid source and page info
+            if source_path and page_number is not None:
+                # Assuming the source path starts with 'uploads/' (8 characters)
+                source_name = source_path[8:] 
+                page = int(page_number) + 1 # Page numbers are often 0-indexed, so add 1
+                
+                # Create a unique key (Source + Page)
+                unique_key = (source_name, page)
+                
+                if unique_key not in seen_sources:
+                    formatted_context.append({"source": source_name, "page": page})
+                    seen_sources.add(unique_key)
+
 
     return jsonify({
         "answer": answer,
         "response_time": response_time,
-        "context": [{"source": doc.metadata["source"][8:], "page": int(doc.metadata["page"])+1} for doc in context] if context else None
+        "context": formatted_context
     })
 
 @app.route('/get-pdf/<path:pdf_name>', methods=['GET'])

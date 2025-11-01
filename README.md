@@ -14,6 +14,7 @@ Create a `.env` file in the root directory of your project with the following co
 ```plaintext
 GROQ_API_KEY=your_groq_api_key_here
 GOOGLE_API_KEY=your_google_api_key_here
+REACT_APP_API_URL=http://localhost:5000
 ```
 
 Replace `your_groq_api_key_here` and `your_google_api_key_here` with your actual API keys.

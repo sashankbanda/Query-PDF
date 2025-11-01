@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-// import './upload.css';
 import Navbar from './Navbar';
 
-function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
+function FileUpload({ setUploadComplete, theme, toggleTheme }) {
   const [files, setFiles] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
+
+  // Get API URL with fallback
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   const onFileChange = (event) => {
     setFiles(Array.from(event.target.files));
@@ -30,11 +32,10 @@ function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
     setMessage('Uploading...');
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, {
+      const response = await axios.post(`${API_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        // This function accurately tracks the upload progress
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setUploadProgress(percentCompleted);
@@ -52,6 +53,7 @@ function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
       setTimeout(() => navigate('/chat'), 500);
 
     } catch (error) {
+      console.error('Upload error:', error);
       setMessage(error.response ? error.response.data.error : 'An error occurred');
       setUploadComplete(false);
     } finally {
@@ -78,7 +80,7 @@ function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
         {message && !loading && <p>{message}</p>}
       </div>
 
-      {/* --- This is the new Progress Bar Popup --- */}
+      {/* Progress Bar Popup */}
       {loading && (
         <div className="progress-popup">
           <div className="progress-content">

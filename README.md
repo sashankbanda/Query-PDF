@@ -1,8 +1,8 @@
-<a href="https://github.com/JoshuaThadi/JoshuaThadi/blob/main/fallout_grayscale%20(1).gif">
-  <img src="https://github.com/JoshuaThadi/JoshuaThadi/blob/main/fallout_grayscale%20(1).gif" alt="Fallout GIF" style="width:auto; height:auto" />
-</a>
-
 # QueryPDF Setup Guide
+
+![Views](https://visitor-badge.glitch.me/badge?page_id=sashankbanda.QueryPDF)
+![Contributors](https://img.shields.io/github/contributors/sashankbanda/QueryPDF)
+![Last Commit](https://img.shields.io/github/last-commit/sashankbanda/QueryPDF)
 
 Follow these steps to set up and run the QueryPDF application.
 

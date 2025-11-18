@@ -5,7 +5,6 @@ Follow these steps to set up and run the QueryPDF.
 ## Prerequisites
 
 1. **Groq API Key**: Obtain from [Groq API Key](https://console.groq.com/playground).
-2. **Google API Key**: Obtain from [Google API Key](https://ai.google.dev/gemini-api/docs/api-key).
 
 ## .env File Configuration
 
@@ -13,10 +12,9 @@ Create a `.env` file in the root directory of your project with the following co
 
 ```plaintext
 GROQ_API_KEY=your_groq_api_key_here
-GOOGLE_API_KEY=your_google_api_key_here
 ```
 
-Replace `your_groq_api_key_here` and `your_google_api_key_here` with your actual API keys.
+Replace `your_groq_api_key_here` with your actual API keys.
 
 ## Backend Setup
 

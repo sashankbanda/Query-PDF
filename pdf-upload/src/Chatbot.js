@@ -5,6 +5,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 // import './chat.css';
 import Navbar from './Navbar';
+import API_URL from './config';
 
 // Set up the PDF.js worker to render PDFs
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -29,7 +30,7 @@ function Chatbot({ theme, toggleTheme }) {
   useEffect(() => {
     const fetchPdfNames = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/get-pdf-names`);
+        const response = await axios.get(`${API_URL}/get-pdf-names`);
         const names = response.data.pdfNames;
         setPdfNames(names);
         // If there are PDFs, automatically select and load the first one
@@ -48,7 +49,7 @@ function Chatbot({ theme, toggleTheme }) {
   const fetchPdf = async (pdfName) => {
     if (!pdfName) return;
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/get-pdf/${pdfName}`, { responseType: 'blob' });
+      const response = await axios.get(`${API_URL}/get-pdf/${pdfName}`, { responseType: 'blob' });
       const fileURL = URL.createObjectURL(response.data);
       setPdfFile(fileURL);
     } catch (error) {
@@ -105,7 +106,7 @@ function Chatbot({ theme, toggleTheme }) {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/ask`, { question });
+      const response = await axios.post(`${API_URL}/ask`, { question });
       const botMessage = {
         sender: 'bot',
         text: response.data.answer,
@@ -113,11 +114,20 @@ function Chatbot({ theme, toggleTheme }) {
       };
       setChatHistory(prev => [...prev, botMessage]);
     } catch (error) {
+      let errorText = 'Sorry, an error occurred while processing your question.';
+      if (error.response) {
+        // Server responded with an error
+        errorText = error.response.data.error || error.response.data.message || errorText;
+      } else if (error.request) {
+        // Request was made but no response received
+        errorText = 'Unable to connect to the server. Please ensure the backend is running on port 5000.';
+      }
       const errorMessage = {
         sender: 'bot',
-        text: error.response ? error.response.data.error : 'Sorry, an error occurred.',
+        text: `Error: ${errorText}`,
       };
       setChatHistory(prev => [...prev, errorMessage]);
+      console.error('Question submission error:', error);
     } finally {
       setIsLoading(false);
     }

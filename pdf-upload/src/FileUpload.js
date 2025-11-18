@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import './upload.css';
 import Navbar from './Navbar';
+import API_URL from './config';
 
 function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
   const [files, setFiles] = useState([]);
@@ -30,7 +31,7 @@ function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
     setMessage('Uploading...');
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/upload`, formData, {
+      const response = await axios.post(`${API_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -52,8 +53,17 @@ function FileUpload({ setUploadComplete ,theme, toggleTheme }) {
       setTimeout(() => navigate('/chat'), 500);
 
     } catch (error) {
-      setMessage(error.response ? error.response.data.error : 'An error occurred');
+      let errorMessage = 'An error occurred while uploading files';
+      if (error.response) {
+        // Server responded with an error
+        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+      } else if (error.request) {
+        // Request was made but no response received
+        errorMessage = 'Unable to connect to the server. Please ensure the backend is running on port 5000.';
+      }
+      setMessage(`Error: ${errorMessage}`);
       setUploadComplete(false);
+      console.error('Upload error:', error);
     } finally {
       setLoading(false);
     }

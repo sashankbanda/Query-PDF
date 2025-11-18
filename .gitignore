@@ -1,32 +1,110 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
 *.db
 *.sqlite3
+*.sqlite
 *.egg-info/
+dist/
+build/
+*.egg
 venv/
+env/
+ENV/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*
+!.env.example
 
 # Node / React
 pdf-upload/node_modules/
+pdf-upload/.pnp
+pdf-upload/.pnp.js
 pdf-upload/build/
-pdf-upload/.env
-pdf-upload/.env.*
-
-# OS / IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
+pdf-upload/dist/
+pdf-upload/.cache/
+pdf-upload/coverage/
+pdf-upload/.npm
+pdf-upload/.eslintcache
+pdf-upload/.yarn/
+pdf-upload/.yarn-integrity
 
 # Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
-# Uploaded files
+# OS / IDE
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Application specific
 uploads/
+persistent_data/
+*.faiss
+*.pkl
+*.index
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/

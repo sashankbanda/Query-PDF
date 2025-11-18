@@ -2,9 +2,9 @@ faiss-cpu
 groq
 langchain-groq
 PyPDF2
-langchain_google_genai
 langchain
 langchain_community
+langchain-huggingface
 python-dotenv
 pypdf
 pyMuPDF
@@ -12,3 +12,5 @@ flask
 flask_cors
 pdf2image
 gunicorn
+sentence-transformers
+torch

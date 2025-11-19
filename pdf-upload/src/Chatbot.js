@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-// import './chat.css';
+import './highlight.css';
 import Navbar from './Navbar';
 import API_URL from './config';
 
@@ -19,6 +19,7 @@ function Chatbot({ theme, toggleTheme }) {
   const [pdfNames, setPdfNames] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeCitation, setActiveCitation] = useState(null);
   const chatEndRef = useRef(null);
 
   // Automatically scroll to the bottom of the chat window when new messages are added
@@ -66,10 +67,19 @@ function Chatbot({ theme, toggleTheme }) {
   };
 
   // Handle clicking on a citation link in the chat
-  const handleClickCitation = (pdfName, page) => {
-    setSelectedPdf(pdfName);
-    fetchPdf(pdfName);
-    setPageNumber(page);
+  const handleClickCitation = (doc) => {
+    if (!doc) return;
+    const { source, page } = doc;
+    if (source && source !== selectedPdf) {
+      setSelectedPdf(source);
+      fetchPdf(source);
+    } else if (source) {
+      setSelectedPdf(source);
+    }
+    if (page) {
+      setPageNumber(page);
+    }
+    setActiveCitation(doc.text ? doc : null);
   };
 
   // Callback for when the PDF document is successfully loaded
@@ -93,6 +103,80 @@ function Chatbot({ theme, toggleTheme }) {
     }
   };
   // --- End PDF Page Navigation ---
+
+  const clearExistingHighlights = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    const highlightedSpans = document.querySelectorAll('.pdf-highlight');
+    highlightedSpans.forEach((span) => span.classList.remove('pdf-highlight'));
+  }, []);
+
+  const normalizeForCompare = (text) =>
+    text ? text.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim() : '';
+
+  const highlightCitationText = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    if (
+      !activeCitation ||
+      !activeCitation.text ||
+      !selectedPdf ||
+      selectedPdf !== activeCitation.source ||
+      pageNumber !== activeCitation.page
+    ) {
+      clearExistingHighlights();
+      return;
+    }
+
+    const pageElement = document.querySelector(
+      `.react-pdf__Page[data-page-number="${pageNumber}"]`
+    );
+    if (!pageElement) return;
+
+    const textLayer =
+      pageElement.querySelector('.react-pdf__Page__textContent .textLayer') ||
+      pageElement.querySelector('.react-pdf__Page__textContent');
+    if (!textLayer) return;
+
+    const runHighlight = () => {
+      textLayer
+        .querySelectorAll('.pdf-highlight')
+        .forEach((span) => span.classList.remove('pdf-highlight'));
+
+      const spans = Array.from(
+        textLayer.querySelectorAll('span[role="presentation"], span')
+      );
+      if (!spans.length) return;
+
+      const normalizedSnippet = normalizeForCompare(
+        activeCitation.text.slice(0, 1200)
+      );
+      if (!normalizedSnippet) return;
+
+      const MIN_MATCH_LEN = 3;
+
+      spans.forEach((span) => {
+        const spanNormalized = normalizeForCompare(span.textContent || '');
+        if (
+          spanNormalized.length >= MIN_MATCH_LEN &&
+          normalizedSnippet.includes(spanNormalized)
+        ) {
+          span.classList.add('pdf-highlight');
+        }
+      });
+    };
+
+    requestAnimationFrame(runHighlight);
+  }, [activeCitation, clearExistingHighlights, pageNumber, selectedPdf]);
+
+  useEffect(() => {
+    highlightCitationText();
+  }, [highlightCitationText, numPages]);
+
+  useEffect(
+    () => () => {
+      clearExistingHighlights();
+    },
+    [clearExistingHighlights]
+  );
 
   // Handle submitting a question to the chatbot
   const onQuestionSubmit = async () => {
@@ -157,7 +241,11 @@ function Chatbot({ theme, toggleTheme }) {
             <>
               <div className="pdf-document-container">
                 <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
-                  <Page pageNumber={pageNumber} />
+                  <Page
+                    pageNumber={pageNumber}
+                    onRenderSuccess={highlightCitationText}
+                    onGetTextSuccess={highlightCitationText}
+                  />
                 </Document>
               </div>
               <div className="pdf-navigation">
@@ -195,7 +283,7 @@ function Chatbot({ theme, toggleTheme }) {
                     <strong>Sources:</strong>
                     {msg.context.map((doc, idx) => (
                       <p key={idx} className="citation-link">
-                        <a href="#" onClick={(e) => { e.preventDefault(); handleClickCitation(doc.source, doc.page); }}>
+                        <a href="#" onClick={(e) => { e.preventDefault(); handleClickCitation(doc); }}>
                           {doc.source}, Page: {doc.page}
                         </a>
                       </p>

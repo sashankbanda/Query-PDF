@@ -190,10 +190,20 @@ def ask_question():
                 # Most loaders are 0-indexed; ensure we return 1-indexed pages
                 page_display = page + 1 if page >= 0 else 1
 
-                unique_key = (source_name, page_display)
+                text_snippet = doc.page_content.strip() if getattr(doc, "page_content", None) else ""
+                if text_snippet:
+                    # Collapse extra whitespace and limit payload size
+                    text_snippet = " ".join(text_snippet.split())
+                    text_snippet = text_snippet[:800]
+
+                unique_key = (source_name, page_display, text_snippet)
 
                 if unique_key not in seen_sources:
-                    formatted_context.append({"source": source_name, "page": page_display})
+                    formatted_context.append({
+                        "source": source_name,
+                        "page": page_display,
+                        "text": text_snippet
+                    })
                     seen_sources.add(unique_key)
 
         return jsonify({

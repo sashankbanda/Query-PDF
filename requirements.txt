@@ -1,18 +1,20 @@
-faiss-cpu
-groq
-langchain-groq
-langchain
-langchain_community
-langchain-huggingface
-python-dotenv
-# PyPDF2 is old, use pypdf instead if possible, but keep if your code uses it
-PyPDF2
-pypdf
-pyMuPDF
 flask
 flask_cors
-pdf2image
 gunicorn
-sentence-transformers
+python-dotenv
+# PDF Tools
+pypdf
+pyMuPDF
+pdf2image
 pytesseract
-# torch <-- REMOVE THIS LINE (Handled by Dockerfile)
+# AI & LangChain - Pinning versions to ensure compatibility
+langchain==0.2.14
+langchain-community==0.2.12
+langchain-core==0.2.33
+langchain-groq==0.1.9
+langchain-huggingface==0.0.3
+langchain-text-splitters==0.2.2
+# Vector Store
+faiss-cpu
+# Embeddings dependencies
+sentence-transformers

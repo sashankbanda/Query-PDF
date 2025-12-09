@@ -18,7 +18,9 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
+# Fallback to community for stable versions
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 load_dotenv()

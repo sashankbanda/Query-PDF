@@ -1,20 +1,17 @@
 faiss-cpu
 groq
 langchain-groq
-PyPDF2
-langchain_google_genai
 langchain
 langchain_community
-langchain_huggingface
-sentence-transformers
-torch
-transformers
+langchain-huggingface
 python-dotenv
+# PyPDF2 is old, use pypdf instead if possible, but keep if your code uses it
+PyPDF2
 pypdf
-pymupdf
-pdf2image
-pytesseract
-pillow
+pyMuPDF
 flask
 flask_cors
+pdf2image
 gunicorn
+sentence-transformers
+# torch <-- REMOVE THIS LINE (Handled by Dockerfile)

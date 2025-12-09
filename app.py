@@ -23,7 +23,10 @@ from langchain.schema import Document
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# Allow all origins so your frontend can communicate with this backend
+CORS(app, origins=["*"], 
+     allow_headers=["Content-Type", "Authorization"], 
+     methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"])
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
@@ -34,7 +37,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 groq_api_key = os.getenv("GROQ_API_KEY")
-os.environ['GOOGLE_API_KEY'] = os.getenv("GOOGLE_API_KEY")
+# os.environ['GOOGLE_API_KEY'] = os.getenv("GOOGLE_API_KEY")
 
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant")
 
